@@ -22,29 +22,42 @@ class ConvertCollectionToEmpty(Operator):
 
 
     def execute(self, context):
-        
-        print("SCRIPT WORKS")
-        
-
-        
-        
+              
         rez_list = []
-        collections(bpy.context.collection, rez_list,null)
+        
+        #using index 0 as there is only one scene collection, meaning there is no use in copying this one aswell.
+        collections(bpy.context.scene.collection.children[0], rez_list, None)
         print(rez_list)
-
+        #    if collection.all_objects.count > 0:
+        #print(len(bpy.context.collection.values()))
+        
         return {'FINISHED'}
 
 def collections(collection, col_list, parentObj):
-    col_list.append(collection)
+    col_list.append(collection.name)    
+    print(len(collection.objects))
     
-    emptyObj = bpy.data.objects.new("empty", None)#change "empty" to name name of collection
-    emptyObj.empty_display_size = 0.0001
-    emptyObj.empty_display_type = 'PLAIN_AXES'
+    emptyObj : local
     
-    bpy.context.scene.collection.objects.link(emptyObj)
-    
+    if len(collection.objects) > 0:    
+        objName = collection.name
+        emptyObj = bpy.data.objects.new(objName, None)
+        emptyObj.empty_display_size = 0.0001
+        emptyObj.empty_display_type = 'PLAIN_AXES'   
+        bpy.context.scene.collection.objects.link(emptyObj)
+        
+        if parentObj is not None:
+            emptyObj.parent = parentObj
+        
+        for obj in collection.objects:
+            obj.parent = emptyObj
+            
     for sub_collection in collection.children:
         collections(sub_collection, col_list, emptyObj)
+
+
+
+
 
 
 def menu_item_draw_func(self, context):
