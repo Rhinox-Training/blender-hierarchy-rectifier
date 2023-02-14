@@ -4,7 +4,7 @@ bl_info = {
     "version": (1, 0),
     "blender": (3, 3, 1),
     "location": "View3D",
-    "description": "Converts all the collections under the scene collection to the equivalent but made out of empty objects",
+    "description": "Converts all the collections under the scene collection to the equivalent strucut but made out of empty objects",
     "warning": "",
     "doc_url": "",
     #"category": "Add Mesh",
@@ -12,7 +12,7 @@ bl_info = {
 
 import bpy
 from bpy.types import (
-    AddonPreferences
+    AddonPreferences,
     Operator,
     Panel,
     PropertyGroup,
@@ -26,52 +26,22 @@ class ConvertCollectionToEmpty(Operator):
     bl_description = "Converts all the collections under the scene collection to the equivalent but made out of empty objects"
     bl_options = {'REGISTER', 'UNDO'}           # Enable undo for the operator.
 
-
-#    def execute(self, context):
-#         
-#        #using index 0 as there is only one scene collection, meaning there is no use in copying this one aswell.
-#        CollectionsToEmptyConversion(bpy.context.scene.collection.children[0], None)
-#        bpy.context.scene.update()
-#           
-#        return {'FINISHED'}
-
-#def CollectionsToEmptyConversion(collection, parentObj):
-#    print(len(collection.objects))
-#    
-#    emptyObj : local
-#    
-#    if len(collection.objects) > 0:    
-#        objName = collection.name
-#        emptyObj = bpy.data.objects.new(objName, None)
-#        emptyObj.empty_display_size = 0.0001
-#        emptyObj.empty_display_type = 'PLAIN_AXES'
-#        bpy.context.scene.collection.objects.link(emptyObj)
-#                
-#        if parentObj is not None:
-#            emptyObj.parent = parentObj
-#        
-#        for obj in collection.objects:
-#            collection.objects.unlink(obj)
-#            #emptyObj.link(obj)
-#            obj.parent = emptyObj
-#            
-#    for sub_collection in collection.children:
-#        CollectionsToEmptyConversion(sub_collection, emptyObj)
-
-
-
     def execute(self, context):
-        sCollection = bpy.context.scene.collection.children[0]
+        #gets all the collections that are directly connect to the "scene collection"
+        sCollection = bpy.context.scene.collection.children
         
-        root = bpy.data.objects.new("empty", None)
-        bpy.context.scene.collection.objects.link(root)
-        root.name = sCollection.name
-        parentCol(sCollection, root)
+        #looping over the root collections and then making an equivelant empty object
+        for rootObj in sCollection:
+            root = bpy.data.objects.new("empty", None)
+            bpy.context.scene.collection.objects.link(root)
+            root.name = rootObj.name
+            parentCol(rootObj, root)
 
         return {'FINISHED'}
 
-
-
+#this funtions looks inside the given collection and re-parents the objects (if there are any)
+#then it loops over all the collections inside of it and re-parents al of its objects
+#if there are more collections under here then it recursively adds their objects aswell
 def parentCol(_colParent, _objParent):
     
     if len(_colParent.objects) > 0:
@@ -91,11 +61,8 @@ def parentCol(_colParent, _objParent):
                 obj.parent = newObj
                 
         parentCol(col, newObj)
-                
 
-
-
-
+#functions needed for the UI buttons      
 def menu_item_draw_func(self, context):
     self.layout.separator()
     self.layout.operator(ConvertCollectionToEmpty.bl_idname, text="Convert To Empties", icon='PLUGIN')
