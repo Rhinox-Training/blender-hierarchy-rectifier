@@ -47,37 +47,63 @@ def parentCol(_colParent, _objParent):
     #if len(_colParent.objects) > 0:
         #print("inside")
     
-    
-    
-    parentObjs = _colParent.objects
-    for obj in parentObjs:
-        #parentObjs.unlink(obj)
-        #bpy.context.scene.collection.objects.link(obj)
-        obj.parent = _objParent
-        #reChilding(obj)
+    if len(_colParent.children) > 0 :        
+        for collection in _colParent.children:
+            newObj = bpy.data.objects.new("empty", None)
+            bpy.context.scene.collection.objects.link(newObj)
+            newObj.name = collection.name
+            newObj.parent = _objParent
             
-#            if obj.parent == None:
-#                parentObjsunlink(obj)
-#                bpy.context.scene.collection.objects.link(obj)
-#                obj.parent = _objParent
-    
-    for col in _colParent.children:
-        newObj = bpy.data.objects.new("empty", None)
-        bpy.context.scene.collection.objects.link(newObj)
-        newObj.name = col.name
-        newObj.parent = _objParent
-    
-        if len(col.objects) > 0:
-            objs = col.objects
-            
-            #props need to do a recursive search inside the object's objects
-            for obj in objs:
-                #for childObj in obj.children
-                #col.objects.unlink(obj)
+            for obj in _colParent.objects:
+                _colParent.objects.unlink(obj)
                 bpy.context.scene.collection.objects.link(obj)
-                obj.parent = newObj
-                
-        parentCol(col, newObj)
+                print("name: ",obj.name)
+                print("parent: ",obj.parent)
+                if obj.parent == None:
+                    obj.parent = _objParent
+            
+            parentCol(collection, newObj)
+    else:
+        for obj in _colParent.objects:
+            _colParent.objects.unlink(obj)
+            bpy.context.scene.collection.objects.link(obj)
+            print("name: ",obj.name)
+            print("parent: ",obj.parent)
+            if obj.parent == None:
+                obj.parent = _objParent
+            
+            
+    return
+    
+#    parentObjs = _colParent.objects
+#    for obj in parentObjs:
+#        #parentObjs.unlink(obj)
+#        #bpy.context.scene.collection.objects.link(obj)
+#        obj.parent = _objParent
+#        #reChilding(obj)
+#            
+##            if obj.parent == None:
+##                parentObjsunlink(obj)
+##                bpy.context.scene.collection.objects.link(obj)
+##                obj.parent = _objParent
+#    
+#    for col in _colParent.children:
+#        newObj = bpy.data.objects.new("empty", None)
+#        bpy.context.scene.collection.objects.link(newObj)
+#        newObj.name = col.name
+#        newObj.parent = _objParent
+#    
+#        if len(col.objects) > 0:
+#            objs = col.objects
+#            
+#            #props need to do a recursive search inside the object's objects
+#            for obj in objs:
+#                #for childObj in obj.children
+#                #col.objects.unlink(obj)
+#                bpy.context.scene.collection.objects.link(obj)
+#                obj.parent = newObj
+#                
+#        parentCol(col, newObj)
 
 def reChilding(parent):
     #go over childs and reparent them if they have children go over it recursively
