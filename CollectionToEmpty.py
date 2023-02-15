@@ -57,12 +57,20 @@ def parentCol(_colParent, _objParent):
     
         if len(col.objects) > 0:
             objs = col.objects
+            
+            #props need to do a recursive search inside the object's objects
             for obj in objs:
+                #for childObj in obj.children
+                #col.objects.unlink(obj)
+                #newObj.objects.link(obj)
                 obj.parent = newObj
                 
         parentCol(col, newObj)
+        
+        
+#def recursiveChildObjects():
 
-#functions needed for the UI buttons      
+#functions needed for the UI buttons
 def menu_item_draw_func(self, context):
     self.layout.separator()
     self.layout.operator(ConvertCollectionToEmpty.bl_idname, text="Convert To Empties", icon='PLUGIN')
