@@ -1,7 +1,7 @@
 bl_info = {
     "name": "Convert Collection to Empty Structure",
     "author": "Glenn Quintyn | Rhinox",
-    "version": (1, 0),
+    "version": (1, 2),
     "blender": (3, 3, 1),
     "location": "View3D",
     "description": "Converts all the collections under the scene collection to the equivalent strucut but made out of empty objects",
@@ -29,13 +29,13 @@ class ConvertCollectionToEmpty(Operator):
     def execute(self, context):
         #gets all the collections that are directly connect to the "scene collection"
         sCollection = bpy.context.scene.collection.children
-        
+        print("\nStart\n")
         #looping over the root collections and then making an equivelant empty object
-        for rootObj in sCollection:
-            root = bpy.data.objects.new("empty", None)
-            bpy.context.scene.collection.objects.link(root)
-            root.name = rootObj.name
-            parentCol(rootObj, root)
+        for rootCol in sCollection:
+            rootEmptyObj = bpy.data.objects.new("empty", None)#check if exists and if so don't re-create
+            bpy.context.scene.collection.objects.link(rootEmptyObj)
+            rootEmptyObj.name = rootCol.name
+            parentCol(rootCol, rootEmptyObj)
 
         return {'FINISHED'}
 
@@ -43,11 +43,23 @@ class ConvertCollectionToEmpty(Operator):
 #then it loops over all the collections inside of it and re-parents al of its objects
 #if there are more collections under here then it recursively adds their objects aswell
 def parentCol(_colParent, _objParent):
+    #print("funbc")
+    #if len(_colParent.objects) > 0:
+        #print("inside")
     
-    if len(_colParent.objects) > 0:
-        parentObjs = _colParent.objects
-        for obj in parentObjs:
-            obj.parent = _objParent
+    
+    
+    parentObjs = _colParent.objects
+    for obj in parentObjs:
+        #parentObjs.unlink(obj)
+        #bpy.context.scene.collection.objects.link(obj)
+        obj.parent = _objParent
+        #reChilding(obj)
+            
+#            if obj.parent == None:
+#                parentObjsunlink(obj)
+#                bpy.context.scene.collection.objects.link(obj)
+#                obj.parent = _objParent
     
     for col in _colParent.children:
         newObj = bpy.data.objects.new("empty", None)
@@ -62,11 +74,25 @@ def parentCol(_colParent, _objParent):
             for obj in objs:
                 #for childObj in obj.children
                 #col.objects.unlink(obj)
-                #newObj.objects.link(obj)
+                bpy.context.scene.collection.objects.link(obj)
                 obj.parent = newObj
                 
         parentCol(col, newObj)
-        
+
+def reChilding(parent):
+    #go over childs and reparent them if they have children go over it recursively
+    #print("parent: ")
+    #print(parent.name)
+    children = parent.children
+    for child in children:
+        #parent.unlink(child)
+        #bpy.context.scene.collection.objects.link(child)
+        child.parent = parent
+        #print("child:")
+        #print(child.name)
+        if len(child.children) > 0:
+            reChilding(child)
+            
         
 #def recursiveChildObjects():
 

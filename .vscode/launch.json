@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Remote Attach",
+            "name": "Attach (Remote Debug)",
             "type": "python",
             "request": "attach",
             "connect": {
@@ -15,7 +15,7 @@
             "pathMappings": [
                 {
                     "localRoot": "${workspaceFolder}",
-                    "remoteRoot": "."
+                    "remoteRoot": "${workspaceFolder}"
                 }
             ],
             "justMyCode": true
