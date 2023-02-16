@@ -1,4 +1,4 @@
-# blender-hierarchy-rectifier
+# Blender Hierarchy Rectifier
 
 This is the python script of the add-on that will convert the collection hierarchy into the same hierarchy but using empty objects instead.
 This is because collections is a blender exclusive thing and it does not get saved inside the .fbx file.
@@ -39,3 +39,7 @@ Select the option “Convert to Empties”.
 In the blender Viewport Shading UI. Select the option “Solid”. This will ease the processing load of blender make the addon run faster on more complex/larger scenes.
 
 ![image Viewport Shading](https://user-images.githubusercontent.com/76707656/219388742-191309ec-6793-47bf-9594-6efe413f0eee.png)
+
+# License
+
+Apache-2.0 © Rhinox NV
